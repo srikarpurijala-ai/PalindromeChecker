@@ -1,3 +1,6 @@
+// Palindrome Checker Application
+// Use Case 7: Deque-Based Optimized Palindrome Checker
+
 import java.util.Stack;
 import java.util.Queue;
 import java.util.Deque;

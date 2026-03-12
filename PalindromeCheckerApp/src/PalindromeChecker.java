@@ -1,6 +1,6 @@
 // Palindrome Checker Application
-// Use Case 11: Object-Oriented Palindrome Service
 // Use Case 12: Strategy Pattern for Palindrome Algorithms
+// Use Case 13: Performance Comparison
 
 import java.util.Stack;
 import java.util.Deque;
@@ -53,21 +53,30 @@ class DequeStrategy implements PalindromeStrategy {
     }
 }
 
-// Object-Oriented Palindrome Service
-class PalindromeService {
+// Utility class for Reverse and Stack methods
+class PalindromeUtils {
 
-    private PalindromeStrategy strategy;
-
-    public PalindromeService(PalindromeStrategy strategy) {
-        this.strategy = strategy;
+    // Method 1: Reverse String Approach
+    public static boolean checkUsingReverse(String word) {
+        String reversed = "";
+        for (int i = word.length() - 1; i >= 0; i--) {
+            reversed = reversed + word.charAt(i);
+        }
+        return word.equals(reversed);
     }
 
-    public boolean checkPalindrome(String word) {
-        return strategy.checkPalindrome(word);
-    }
-
-    public void setStrategy(PalindromeStrategy strategy) {
-        this.strategy = strategy;
+    // Method 2: Stack Approach
+    public static boolean checkUsingStack(String word) {
+        Stack<Character> stack = new Stack<>();
+        for (int i = 0; i < word.length(); i++) {
+            stack.push(word.charAt(i));
+        }
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) != stack.pop()) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 
@@ -78,26 +87,33 @@ public class PalindromeChecker {
 
         String word = "level";
 
-        // Create service using Stack strategy
-        PalindromeService service = new PalindromeService(new StackStrategy());
+        // Measure Reverse Method Time
+        long start1 = System.nanoTime();
+        boolean result1 = PalindromeUtils.checkUsingReverse(word);
+        long end1 = System.nanoTime();
 
-        boolean result = service.checkPalindrome(word);
+        // Measure Stack Method Time
+        long start2 = System.nanoTime();
+        boolean result2 = PalindromeUtils.checkUsingStack(word);
+        long end2 = System.nanoTime();
 
-        // Display result
-        if (result) {
-            System.out.println("The word \"" + word + "\" is a Palindrome (Stack Strategy).");
+        // Using Strategy Pattern (StackStrategy example)
+        PalindromeStrategy strategy = new StackStrategy();
+        boolean resultStrategy = strategy.checkPalindrome(word);
+
+        // Display results
+        System.out.println("Reverse Method Result: " + result1);
+        System.out.println("Execution Time (Reverse): " + (end1 - start1) + " ns");
+        System.out.println();
+
+        System.out.println("Stack Method Result: " + result2);
+        System.out.println("Execution Time (Stack): " + (end2 - start2) + " ns");
+        System.out.println();
+
+        if (resultStrategy) {
+            System.out.println("Strategy Pattern Result: The word \"" + word + "\" is a Palindrome.");
         } else {
-            System.out.println("The word \"" + word + "\" is NOT a Palindrome (Stack Strategy).");
-        }
-
-        // Switch to Deque strategy
-        service.setStrategy(new DequeStrategy());
-        result = service.checkPalindrome(word);
-
-        if (result) {
-            System.out.println("The word \"" + word + "\" is a Palindrome (Deque Strategy).");
-        } else {
-            System.out.println("The word \"" + word + "\" is NOT a Palindrome (Deque Strategy).");
+            System.out.println("Strategy Pattern Result: The word \"" + word + "\" is NOT a Palindrome.");
         }
     }
 }

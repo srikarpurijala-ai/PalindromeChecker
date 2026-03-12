@@ -1,66 +1,103 @@
-
 // Palindrome Checker Application
-// Use Case 10: Case-Insensitive & Space-Ignored Palindrome
 // Use Case 11: Object-Oriented Palindrome Service
+// Use Case 12: Strategy Pattern for Palindrome Algorithms
 
-class PalindromeService {
+import java.util.Stack;
+import java.util.Deque;
+import java.util.LinkedList;
 
-    // Method to check palindrome
+// Strategy Interface
+interface PalindromeStrategy {
+    boolean checkPalindrome(String word);
+}
+
+// Stack Strategy Implementation
+class StackStrategy implements PalindromeStrategy {
+
     public boolean checkPalindrome(String word) {
 
-        int start = 0;
-        int end = word.length() - 1;
+        Stack<Character> stack = new Stack<>();
 
-        while (start < end) {
-            if (word.charAt(start) != word.charAt(end)) {
+        for (int i = 0; i < word.length(); i++) {
+            stack.push(word.charAt(i));
+        }
+
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) != stack.pop()) {
                 return false;
             }
-            start++;
-            end--;
         }
 
         return true;
     }
 }
 
+// Deque Strategy Implementation
+class DequeStrategy implements PalindromeStrategy {
+
+    public boolean checkPalindrome(String word) {
+
+        Deque<Character> deque = new LinkedList<>();
+
+        for (int i = 0; i < word.length(); i++) {
+            deque.addLast(word.charAt(i));
+        }
+
+        while (deque.size() > 1) {
+            if (deque.removeFirst() != deque.removeLast()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+// Object-Oriented Palindrome Service
+class PalindromeService {
+
+    private PalindromeStrategy strategy;
+
+    public PalindromeService(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public boolean checkPalindrome(String word) {
+        return strategy.checkPalindrome(word);
+    }
+
+    public void setStrategy(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+}
+
+// Main class
 public class PalindromeChecker {
 
     public static void main(String[] args) {
 
-        // Original sentence
-        String sentence = "A man a plan a canal Panama";
+        String word = "level";
 
-        // Normalize string: remove spaces and convert to lowercase
-        String normalized = sentence.replaceAll("\\s+", "").toLowerCase();
+        // Create service using Stack strategy
+        PalindromeService service = new PalindromeService(new StackStrategy());
 
-        // Reverse the normalized string
-        String reversed = "";
-
-        for (int i = normalized.length() - 1; i >= 0; i--) {
-            reversed = reversed + normalized.charAt(i);
-        }
-
-        // Check palindrome ignoring spaces and case
-        if (normalized.equals(reversed)) {
-            System.out.println("The sentence \"" + sentence + "\" is a Palindrome (ignoring spaces and case).");
-        } else {
-            System.out.println("The sentence \"" + sentence + "\" is NOT a Palindrome.");
-        }
-
-        // Word for object-oriented palindrome check
-        String word = "madam";
-
-        // Create object of PalindromeService
-        PalindromeService service = new PalindromeService();
-
-        // Call method
         boolean result = service.checkPalindrome(word);
 
         // Display result
         if (result) {
-            System.out.println("The word \"" + word + "\" is a Palindrome.");
+            System.out.println("The word \"" + word + "\" is a Palindrome (Stack Strategy).");
         } else {
-            System.out.println("The word \"" + word + "\" is NOT a Palindrome.");
+            System.out.println("The word \"" + word + "\" is NOT a Palindrome (Stack Strategy).");
+        }
+
+        // Switch to Deque strategy
+        service.setStrategy(new DequeStrategy());
+        result = service.checkPalindrome(word);
+
+        if (result) {
+            System.out.println("The word \"" + word + "\" is a Palindrome (Deque Strategy).");
+        } else {
+            System.out.println("The word \"" + word + "\" is NOT a Palindrome (Deque Strategy).");
         }
     }
 }
